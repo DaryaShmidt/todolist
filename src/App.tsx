@@ -15,12 +15,13 @@ export const App = ()=> {
   ]);
 
   function createTask(title: TaskType['title']) {
-    if (title.trim() === '') {
-      alert('Title is required');
-      return;
-    }
     const newTask =  {id: v1(), title: title, isDone: false};
     setTasks([newTask, ...tasks]);
+  }
+
+  function changeTaskStatus(taskID: TaskType['id'], isDone:TaskType['isDone']){
+    const newState: TaskType[] = tasks.map(task => task.id === taskID ? {...task, isDone} : task)
+    setTasks(newState);
   }
 
   function removeTask(id: TaskType["id"]) {
@@ -39,6 +40,7 @@ export const App = ()=> {
                 removeTask={removeTask}
                 removeAllTasks={removeAllTasks}
                 createTask={createTask}
+                changeTaskStatus={changeTaskStatus}
                 />
     </div>
   );
