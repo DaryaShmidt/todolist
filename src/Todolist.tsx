@@ -21,14 +21,22 @@ export const Todolist = ({ title, tasks, removeTask, removeAllTasks, createTask,
   let [filter, setFilter] = useState<FilterValuesType>("all");
   let [error, setError] = useState<string|null>(null);
 
-  let tasksForTodolist = tasks;
 
-  if (filter === "active") {
-    tasksForTodolist = tasks.filter(t => t.isDone === false);
+  function getFilteredTasks () {
+    let tasksForTodolist = tasks;
+    switch (filter) {
+      case "active":
+        tasksForTodolist = tasks.filter(t => t.isDone === false);
+        return tasksForTodolist;
+      case "completed":
+        tasksForTodolist = tasks.filter(t => t.isDone === true);
+        return tasksForTodolist;
+        default:
+          return tasksForTodolist;
+    }
   }
-  if (filter === "completed") {
-    tasksForTodolist = tasks.filter(t => t.isDone === true);
-  }
+
+
 
   function changeFilter(value: FilterValuesType) {
     setFilter(value);
@@ -68,9 +76,9 @@ export const Todolist = ({ title, tasks, removeTask, removeAllTasks, createTask,
       {error && <span className={'error-message'}>{error}</span>}
     </div>
     <ul>
-      {tasksForTodolist.length === 0
+      {getFilteredTasks().length === 0
         ? <span>There is no any task in the list</span>
-        : tasksForTodolist.map(t => <li key={t.id}>
+        : getFilteredTasks().map(t => <li key={t.id}>
             <input type="checkbox" checked={t.isDone} onChange={(e) => changeTaskStatus(t.id, e.currentTarget.checked)}/>
             <span className={t.isDone === true ? 'is-done' : ''}>{t.title}</span>
             <button onClick={() => { removeTask(t.id) }}>x</button>
