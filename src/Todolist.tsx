@@ -1,10 +1,12 @@
-import { ChangeEvent, KeyboardEvent, useState } from 'react';
-import { FilterValuesType } from './App';
+
+import {FilterValuesType} from './App';
+import {CreateItemForm} from './CreateItemForm.tsx';
+import {EditableSpan} from './EditableSpan.tsx';
 
 export type TaskType = {
-  id: string
-  title: string
-  isDone: boolean
+    id: string
+    title: string
+    isDone: boolean
 }
 
 export type TodolistType = {
@@ -14,124 +16,94 @@ export type TodolistType = {
 }
 
 type PropsType = {
-  todolist: TodolistType
-  tasks: TaskType[]
-  removeTask: (todolistId: TodolistType['id'], taskId: string) => void
-  removeAllTasks: (todolistId: TodolistType['id']) => void
-  createTask: (todolistId: TodolistType['id'], title: TaskType['title']) => void
-  changeTaskStatus: (todolistId: TodolistType['id'], taskId: TaskType['id'], isDone:TaskType['isDone']) => void;
-  changeFilter: (todolistId: TodolistType['id'], filterValue: FilterValuesType) => void
-  deleteTodolist: (todolistId: TodolistType['id']) => void
+    todolist: TodolistType
+    tasks: TaskType[]
+    removeTask: (todolistId: TodolistType['id'], taskId: string) => void
+    removeAllTasks: (todolistId: TodolistType['id']) => void
+    createTask: (todolistId: TodolistType['id'], title: TaskType['title']) => void
+    changeTaskStatus: (todolistId: TodolistType['id'], taskId: TaskType['id'], isDone: TaskType['isDone']) => void;
+    changeFilter: (todolistId: TodolistType['id'], filterValue: FilterValuesType) => void
+    deleteTodolist: (todolistId: TodolistType['id']) => void
+    changeTaskTitle: (title: TaskType['title'], todolistId: TodolistType['id'], taskID: TaskType['id']) => void
+    changeTodolistTitle: (title: TodolistType['title'], todolistId: TodolistType['id']) => void
 }
 
-export const Todolist = ({todolist, tasks, removeTask, removeAllTasks, createTask, changeTaskStatus, changeFilter, deleteTodolist}: PropsType) => {
+export const Todolist = ({
+                             todolist,
+                             tasks,
+                             removeTask,
+                             removeAllTasks,
+                             createTask,
+                             changeTaskStatus,
+                             changeFilter,
+                             deleteTodolist,
+                             changeTaskTitle,
+                             changeTodolistTitle
+                         }: PropsType) => {
 
 
-  let [error, setError] = useState<string|null>(null);
-
-  function changeFilterHandler(todolistId: TodolistType['id'], filterValue: FilterValuesType) {
-    changeFilter(todolistId, filterValue);
-  }
-
-  let [inputTitle, setInputTitle] = useState<TaskType['title']>('')
-
-  function onChangeInputHandler(event: ChangeEvent<HTMLInputElement>) {
-    setError(null);
-    setInputTitle(event.currentTarget.value);
-  }
-
-
-  function onClickButtonHandler(todolistId: TodolistType['id']) {
-    if (inputTitle.trim() === ''){
-      setError('Title is required');
-    } else{
-      createTask(todolistId, inputTitle);
-      setInputTitle('');
+    function changeFilterHandler(todolistId: TodolistType['id'], filterValue: FilterValuesType) {
+        changeFilter(todolistId, filterValue);
     }
-  }
 
-  function createTaskOnEnterHandler(event: KeyboardEvent<HTMLInputElement>, todolistId: TodolistType['id']) {
-    if (event.key === 'Enter') {
-      onClickButtonHandler(todolistId);
+    function onChangeTaskStatusHandler(todolistId: TodolistType['id'], taskId: TaskType['id'], isDone: TaskType['isDone']) {
+        changeTaskStatus(todolistId, taskId, isDone);
     }
-  }
 
-  function onChangeTaskStatusHandler(todolistId: TodolistType['id'], taskId: TaskType['id'], isDone: TaskType['isDone']) {
-    changeTaskStatus(todolistId, taskId, isDone);
-  }
+    function removeTaskHandler(todolistId: TodolistType['id'], taskId: TaskType['id']) {
+        removeTask(todolistId, taskId);
+    }
 
-  function removeTaskHandler(todolistId: TodolistType['id'], taskId: TaskType['id']) {
-    removeTask(todolistId, taskId);
-  }
+    function deleteTodolistHandler(todolistId: TodolistType['id']) {
+        deleteTodolist(todolistId);
+    }
 
-  function deleteTodolistHandler(todolistId: TodolistType['id']) {
-    deleteTodolist(todolistId);
-  }
+    function changeTodolistTitleHandler(title: TodolistType['title']) {
+        changeTodolistTitle(title, todolist.id);
+    }
 
 
-  return <div>
-    <div className={'container'}>
-      <h3>{todolist.title}</h3>
-      <button onClick={()=> deleteTodolistHandler(todolist.id)}>X</button>
+    return <div>
+        <div className={'container'}>
+            <h3><EditableSpan value={todolist.title} onChange={changeTodolistTitleHandler}/></h3>
+            <button onClick={() => deleteTodolistHandler(todolist.id)}>X</button>
+        </div>
+        <CreateItemForm onCreateItem={(title) => createTask(todolist.id, title)}/>
+        <ul>
+            {tasks.length === 0
+                ? <span>There is no any task in the list</span>
+                : tasks.map(t => {
+                        function changeTaskTitleHandler (title: TaskType['title']) {
+                        changeTaskTitle (title, todolist.id, t.id);
+                    }
+                    return (
+                        <li key={t.id}>
+                            <input
+                                type="checkbox"
+                                checked={t.isDone}
+                                onChange={(e) => onChangeTaskStatusHandler(todolist.id, t.id, e.currentTarget.checked)}
+                            />
+                            <EditableSpan value={t.title} className={t.isDone ? 'task-done' : ''} onChange={changeTaskTitleHandler}/>
+                            <button onClick={() => removeTaskHandler(todolist.id, t.id)}>x</button>
+                        </li>)})}
+        </ul>
+        <div>
+            <button onClick={() => changeFilterHandler(todolist.id, 'all')}
+                    className={todolist.filter === 'all' ? 'active-filter' : ''}>
+                All
+            </button>
+            <button onClick={() => changeFilterHandler(todolist.id, 'active')}
+                    className={todolist.filter === 'active' ? 'active-filter' : ''}>
+                Active
+            </button>
+            <button onClick={() => changeFilterHandler(todolist.id, 'completed')}
+                    className={todolist.filter === 'completed' ? 'active-filter' : ''}>
+                Completed
+            </button>
+        </div>
+        <button onClick={() => removeAllTasks(todolist.id)}>Delete all tasks</button>
     </div>
-    <div>
-      <input value={inputTitle}
-        onChange={onChangeInputHandler}
-        onKeyDown={(event)=> createTaskOnEnterHandler(event, todolist.id)}
-        className={error ? 'error' : '' }/>
-      <button onClick={()=>onClickButtonHandler(todolist.id)}>+</button>
-      {error && <span className={'error-message'}>{error}</span>}
-    </div>
-    <ul>
-      {tasks.length === 0
-        ? <span>There is no any task in the list</span>
-        : tasks.map(t => <li key={t.id}>
-            <input
-              type="checkbox"
-              checked={t.isDone}
-              onChange={(e) => onChangeTaskStatusHandler(todolist.id, t.id, e.currentTarget.checked)}
-            />
-            <span className={t.isDone === true ? 'is-done' : ''}>{t.title}</span>
-            <button onClick={() => removeTaskHandler(todolist.id, t.id)}>x</button>
-          </li>)}
-    </ul>
-    <div>
-      <button onClick={() => changeFilterHandler(todolist.id, "all") } className={todolist.filter === 'all' ? 'active-filter' : ''}>
-        All
-      </button>
-      <button onClick={() => changeFilterHandler(todolist.id, "active")} className={todolist.filter === 'active' ? 'active-filter' : ''}>
-        Active
-      </button>
-      <button onClick={() => changeFilterHandler(todolist.id, "completed")} className={todolist.filter === 'completed' ? 'active-filter' : ''}>
-        Completed
-      </button>
-    </div>
-    <button onClick={()=> removeAllTasks(todolist.id)}>Delete all tasks</button>
-  </div>
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //------------------------------------------------------------------------------------------------
