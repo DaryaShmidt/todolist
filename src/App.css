@@ -1,25 +1,13 @@
 
-.App {
-    padding: 30px;
+.app {
     display: flex;
-    align-items: baseline;
-}
-
-.App > div {
-    margin-right: 50px;
+    flex-direction: column;
+    width: 100vw;
 }
 
 .container {
     display: flex;
     align-items: center;
-}
-
-.error {
-    border: red 1px solid;
-}
-
-.error-message {
-    color: red;
 }
 
 .active-filter {

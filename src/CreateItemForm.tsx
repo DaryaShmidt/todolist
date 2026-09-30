@@ -1,4 +1,7 @@
 import {ChangeEvent, KeyboardEvent, useState} from 'react';
+import {TextField} from '@mui/material';
+import AddBoxIcon from '@mui/icons-material/AddBox'
+import IconButton from '@mui/material/IconButton'
 
 type Props = {
     onCreateItem: (title: string) => void
@@ -30,15 +33,19 @@ export const CreateItemForm = ({onCreateItem}: Props) => {
         }
     }
 
-
     return (
         <div>
-            <input value={inputTitle}
+            <TextField
+                   variant={"outlined"}
+                   value={inputTitle}
+                   label="Enter a title"
+                   size={'small'}
+                   error={!!error}
+                   helperText={error}
                    onChange={onChangeInputHandler}
-                   onKeyDown={(event) => createItemOnEnterHandler(event)}
+                   onKeyDown={createItemOnEnterHandler}
                    className={error ? 'error' : ''}/>
-            <button onClick={() => onClickButtonHandler()}>+</button>
-            {error && <span className={'error-message'}>{error}</span>}
+            <IconButton onClick={() => onClickButtonHandler()} color={'primary'}><AddBoxIcon /></IconButton>
         </div>
     );
 };
