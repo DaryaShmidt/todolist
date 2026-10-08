@@ -1,5 +1,5 @@
 
-import {FilterValuesType} from './App';
+import {FilterValuesType} from './app/App.tsx';
 import {CreateItemForm} from './CreateItemForm.tsx';
 import {EditableSpan} from './EditableSpan.tsx';
 import IconButton from '@mui/material/IconButton';
