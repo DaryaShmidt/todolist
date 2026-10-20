@@ -1,4 +1,4 @@
-import {TasksState} from '../app/App.tsx';
+import {TasksState} from '../../../../app/App.tsx';
 import {beforeEach, expect, test} from 'vitest';
 import {
     changeTaskStatusAC,
@@ -7,9 +7,9 @@ import {
     removeAllTasksAC,
     removeTaskAC,
     tasksReducer
-} from './tasks-reducer.ts';
+} from '../tasks-reducer.ts';
 import {nanoid} from '@reduxjs/toolkit';
-import {createTodolistAC, deleteTodolistAC} from './todolists-reducer.ts';
+import {createTodolistAC, deleteTodolistAC} from '../todolists-reducer.ts';
 
 
 

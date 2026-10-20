@@ -1,13 +1,11 @@
-import {TodolistType} from '../Todolist.tsx';
 import {
     changeTodolistFilterAC,
     createTodolistAC,
-    deleteTodolistAC,
-    todolistsReducer,
+    deleteTodolistAC, FilterValuesType,
+    todolistsReducer, TodolistType,
     updateTodolistTitleAC
-} from './todolists-reducer.ts';
+} from '../todolists-reducer.ts';
 import { beforeEach, expect, test } from 'vitest';
-import {FilterValuesType} from '../app/App.tsx';
 import {nanoid} from '@reduxjs/toolkit';
 
 let todolistId1: string;
